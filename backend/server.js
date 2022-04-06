@@ -2,7 +2,8 @@
 const http = require('http');
 // import de l'application
 const app = require('./app');
-
+// import du package pour utiliser les variables d'environnement
+const dotenv = require("dotenv");
 // écoute le port par défaut ou le port 3000
 const PORT = process.env.PORT || '3000';
 // configure le port

@@ -39,12 +39,59 @@ exports.deleteSauce = (req, res, next) => {
 
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id}) // Query | Void
-        .then(sauce => res.status(200).json(sauce)) // Promise
-        .catch(error => res.status(404).json({ error }));
+      .then((sauces) => {
+        res.status(200).json(sauces)
+      }) // Promise
+      .catch((error) => {
+        res.status(400).json({ error })
+      })
 }
 
 exports.getAllSauces = (req, res, next) => {
     Sauce.find() // Query | ...
-        .then(sauces => res.status(200).json(sauces)) // Promise
-        .catch(error => res.status(400).json({ error }));
+        .then((sauces) => {
+          res.status(200).json(sauces)
+        }) // Promise
+        .catch((error) => {
+          res.status(400).json({ error })
+        })
+}
+
+exports.likeSauce = (req, res, next) => {
+  const like = req.body.like;
+  const userId = req.body.userId;
+  // On cherche la sauce sélectionée
+  Sauce.findOne({ _id: req.params.id })
+    .then(sauce => {
+      // case "n" dont n est la valeur au click de l'user
+      switch(like) {
+        // Like = +1
+        case 1:
+          sauce.likes += 1
+          sauce.usersLiked.push(userId) 
+          console.log("Sauce Liké");
+          res.status(201).json({ message: 'Sauce Liké !'})
+          break;
+        // Like = 0 ou dislike = 0 (like ou dislike -1)
+        case 0:
+          // Find permet de vérifier si l'userId existe ou non
+          if(sauce.usersLiked.find((id) => id === userId)) {
+            sauce.likes -= 1
+            sauce.usersLiked = sauce.usersLiked.filter((id) => id !== userId)
+          }
+          if(sauce.usersDisliked.find((id) => id === userId)) {
+            sauce.dislikes -= 1
+            sauce.usersDisliked = sauce.usersDisliked.filter((id) => id !== userId)
+          }
+          res.status(201).json({ message: 'Sauce !'})
+          break;
+        // Dislike = +1
+        case -1:
+          sauce.dislikes += 1
+          sauce.usersDisliked.push(userId)
+          res.status(201).json({ message: 'Sauce Disliké !'})
+          break;
+      }
+    })
+    .catch(error => res.status(404).json({ error }));
 }
