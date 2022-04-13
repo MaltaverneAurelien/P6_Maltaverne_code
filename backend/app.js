@@ -1,7 +1,7 @@
 const cors = require('cors'); // Cross-origin resource sharing
 const express = require('express'); 
 const path = require('path');
-const helmet = require('helmet');
+const helmet = require('helmet'); // Permet de protéger certaines vulnérabilités grâce aux en-têtes HTTP
 
 const app = express();
 
@@ -13,8 +13,8 @@ app.use(helmet())
 app.use(cors())
 
 app.use((req, res, next) => {
-  res.removeHeader('Cross-Origin-Resource-Policy');
-  res.removeHeader('Cross-Origin-Embedder-Policy');
+  res.removeHeader('Cross-Origin-Resource-Policy'); // Protège de certaines demandes d'autres origines telles que <script> ou <img>
+  res.removeHeader('Cross-Origin-Embedder-Policy'); // Permet de demander que les sous ressources soient de la même origine
   next();
 })
 
